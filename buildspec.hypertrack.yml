@@ -14,23 +14,26 @@ phases:
 
   pre_build:
     commands:
+      - echo "Starting pre-build phase on `date`"
       - pip3 install awscli --upgrade --user
       - echo `aws --version`
       - echo "Logging in to Amazon ECR..."
       - $(aws ecr get-login --region $HT_REGION --no-include-email)
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - echo "Entered the pre_build phase..."
+      - echo "    pre_build phase is done..."
 
   build:
     commands:
       - echo "Build started on `date`"
       - echo "Building the Docker image..."
       - docker build --file Dockerfile.hypertrack --rm -t $HT_REPOSITORY_URI:latest .
+      - echo "Tagging the image"
       - docker tag $HT_REPOSITORY_URI:latest $HT_REPOSITORY_URI:$IMAGE_TAG
+      - echo "Build completed on `date`"
 
   post_build:
     commands:
-      - echo "Build completed on `date`"
+      - echo "Starting Post Build phase"      
       - echo "Pushing the Docker images..."
       - docker push $HT_REPOSITORY_URI:latest
       - docker push $HT_REPOSITORY_URI:$IMAGE_TAG
