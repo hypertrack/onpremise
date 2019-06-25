@@ -48,3 +48,4 @@ docker-compose up -d # Recreate the services
  * [Bug Tracker](https://github.com/getsentry/onpremise)
  * [Forums](https://forum.sentry.io/c/on-premise)
  * [IRC](irc://chat.freenode.net/sentry) (chat.freenode.net, #sentry)
+ * [Docker Image](https://hub.docker.com/_/sentry/)
