@@ -14,3 +14,4 @@ COPY requirements-hypertrack.txt /tmp/requirements-hypertrack.txt
 RUN set -x \
     && pip install -r /tmp/requirements-hypertrack.txt \
     && rm -f /tmp/requirements-hypertrack.txt
+
