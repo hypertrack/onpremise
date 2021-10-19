@@ -1,6 +1,6 @@
-FROM sentry:9.1.2-onbuild
+FROM getsentry/sentry:21.10.0
 
-LABEL io.sentry.base_version="9.1.2-onbuild" \
+LABEL io.sentry.base_version="21.10.0" \
       vendor="Hypertrack, Inc" \
       maintainer="andrey@hypertrack.io"
 
