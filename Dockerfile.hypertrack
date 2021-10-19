@@ -2,7 +2,7 @@ FROM getsentry/sentry:21.10.0
 
 LABEL io.sentry.base_version="21.10.0" \
       vendor="Hypertrack, Inc" \
-      maintainer="thomas@hypertrack.io"
+      maintainer="devops@hypertrack.io"
 
 # Sane defaults for pip
 ENV PIP_NO_CACHE_DIR off
