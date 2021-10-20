@@ -1,8 +1,8 @@
-FROM getsentry/sentry:21.10.0
+FROM sentry:9.1.2-onbuild
 
-LABEL io.sentry.base_version="21.10.0" \
+LABEL io.sentry.base_version="9.1.2-onbuild" \
       vendor="Hypertrack, Inc" \
-      maintainer="devops@hypertrack.io"
+      maintainer="andrey@hypertrack.io"
 
 # Sane defaults for pip
 ENV PIP_NO_CACHE_DIR off
@@ -14,4 +14,3 @@ COPY requirements-hypertrack.txt /tmp/requirements-hypertrack.txt
 RUN set -x \
     && pip install -r /tmp/requirements-hypertrack.txt \
     && rm -f /tmp/requirements-hypertrack.txt
-

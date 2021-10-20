@@ -1,1 +1,1 @@
-FROM getsentry/sentry:21.10.0
+FROM sentry:9.1.2-onbuild
