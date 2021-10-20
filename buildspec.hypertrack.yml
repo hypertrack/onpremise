@@ -45,24 +45,24 @@ phases:
       - printf '[{"name":"'$HT_CONTAINER_WORKER'","imageUri":"%s"}]' $HT_REPOSITORY_URI:$IMAGE_TAG > worker_imagedefinitions.json
       - echo "Dumping *_imagedefinitions.json"
       - cat *_imagedefinitions.json
-      - echo "Upgrading db-migrate task definitions"
-      - RUNTASK=$(aws ecs run-task --launch-type FARGATE --cluster $HT_SENTRY_ECS_CLUSTER --task-definition $HT_SENTRY_DBMIGRATE_TASK --network-configuration "awsvpcConfiguration={subnets=[$HT_RUN_TASK_SUBNETS],securityGroups=[$HT_RUN_TASK_SGS],assignPublicIp=\"DISABLED\"}")
-      - TASK_ID=$( echo "$RUNTASK" | jq -r '.tasks[0].taskArn' )
-      - echo "Started new Task - $TASK_ID"
-      - echo "Waiting for dbmigrate task to be running..."
-      - aws ecs wait tasks-running --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
-      - echo "Dbmigrate task is running"
-      - echo "Waiting for task to stop..."
-      - aws ecs wait tasks-stopped --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
-      - |
-        if expr "x$HT_CREATE_SUPERUSER" : "xyes" > /dev/null; then
-            echo "Creating Superuser"
-            RUNTASK=$(aws ecs run-task --launch-type FARGATE --cluster $HT_SENTRY_ECS_CLUSTER --task-definition $HT_SENTRY_CREATEUSER_TASK --network-configuration "awsvpcConfiguration={subnets=[$HT_RUN_TASK_SUBNETS],securityGroups=[$HT_RUN_TASK_SGS],assignPublicIp=\"DISABLED\"}")
-            TASK_ID=$( echo "$RUNTASK" | jq -r '.tasks[0].taskArn' )
-            aws ecs wait tasks-running --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER && aws ecs wait tasks-stopped --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
-        else
-            echo "We dont create a superuser right now"
-        fi
+#      - echo "Upgrading db-migrate task definitions"
+#      - RUNTASK=$(aws ecs run-task --launch-type FARGATE --cluster $HT_SENTRY_ECS_CLUSTER --task-definition $HT_SENTRY_DBMIGRATE_TASK --network-configuration "awsvpcConfiguration={subnets=[$HT_RUN_TASK_SUBNETS],securityGroups=[$HT_RUN_TASK_SGS],assignPublicIp=\"DISABLED\"}")
+#      - TASK_ID=$( echo "$RUNTASK" | jq -r '.tasks[0].taskArn' )
+#      - echo "Started new Task - $TASK_ID"
+#      - echo "Waiting for dbmigrate task to be running..."
+#      - aws ecs wait tasks-running --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
+#      - echo "Dbmigrate task is running"
+#      - echo "Waiting for task to stop..."
+#      - aws ecs wait tasks-stopped --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
+#      - |
+#        if expr "x$HT_CREATE_SUPERUSER" : "xyes" > /dev/null; then
+#            echo "Creating Superuser"
+#            RUNTASK=$(aws ecs run-task --launch-type FARGATE --cluster $HT_SENTRY_ECS_CLUSTER --task-definition $HT_SENTRY_CREATEUSER_TASK --network-configuration "awsvpcConfiguration={subnets=[$HT_RUN_TASK_SUBNETS],securityGroups=[$HT_RUN_TASK_SGS],assignPublicIp=\"DISABLED\"}")
+#            TASK_ID=$( echo "$RUNTASK" | jq -r '.tasks[0].taskArn' )
+#            aws ecs wait tasks-running --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER && aws ecs wait tasks-stopped --tasks $TASK_ID --cluster $HT_SENTRY_ECS_CLUSTER
+#        else
+#            echo "We dont create a superuser right now"
+#        fi
       - echo "Post Build step is done."
 
 artifacts:
