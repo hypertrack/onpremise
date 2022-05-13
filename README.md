@@ -1,61 +1,50 @@
-# Sentry On-Premise
+# Self-Hosted Sentry nightly
 
 Official bootstrap for running your own [Sentry](https://sentry.io/) with [Docker](https://www.docker.com/).
 
 ## Requirements
 
- * Docker 1.10.0+
- * Compose 1.6.0+ _(optional)_
+* Docker 19.03.6+
+* Compose 1.28.0+
+* 4 CPU Cores
+* 8 GB RAM
+* 20 GB Free Disk Space
 
-## Up and Running
+## Setup
 
-Assuming you've just cloned this repository, the following steps
-will get you up and running in no time!
+To get started with all the defaults, simply clone the repo and run `./install.sh` in your local check-out. Sentry uses Python 3 by default since December 4th, 2020 and Sentry 21.1.0 is the last version to support Python 2.
 
-There may need to be modifications to the included `docker-compose.yml` file to accommodate your needs or your environment. These instructions are a guideline for what you should generally do.
+During the install, a prompt will ask if you want to create a user account. If you require that the install not be blocked by the prompt, run `./install.sh --no-user-prompt`.
 
-1. `docker volume create --name=sentry-data && docker volume create --name=sentry-postgres` - Make our local database and sentry volumes
-    Docker volumes have to be created manually, as they are declared as external to be more durable.
-2. `cp -n .env.example .env` - create env config file
-3. `docker-compose build` - Build and tag the Docker services
-4. `docker-compose run --rm web config generate-secret-key` - Generate a secret key.
-    Add it to `.env` as `SENTRY_SECRET_KEY`.
-5. `docker-compose run --rm web upgrade` - Build the database.
-    Use the interactive prompts to create a user account.
-6. `docker-compose up -d` - Lift all services (detached/background mode).
-7. Access your instance at `localhost:9000`!
+Please visit [our documentation](https://develop.sentry.dev/self-hosted/) for everything else.
 
-## Securing Sentry with SSL/TLS
+## Tips & Tricks
 
-If you'd like to protect your Sentry install with SSL/TLS, there are
-fantastic SSL/TLS proxies like [HAProxy](http://www.haproxy.org/)
-and [Nginx](http://nginx.org/).
+### Event Retention
 
-## Updating Sentry
+Sentry comes with a cleanup cron job that prunes events older than `90 days` by default. If you want to change that, you can change the `SENTRY_EVENT_RETENTION_DAYS` environment variable in `.env` or simply override it in your environment. If you do not want the cleanup cron, you can remove the `sentry-cleanup` service from the `docker-compose.yml`file.
 
-Updating Sentry using Compose is relatively simple. Just use the following steps to update. Make sure that you have the latest version set in your Dockerfile. Or use the latest version of this repository.
+### Installing a specific SHA
 
-Use the following steps after updating this repository or your Dockerfile:
-```sh
-docker-compose build # Build the services again after updating
-docker-compose run --rm web upgrade # Run new migrations
-docker-compose up -d # Recreate the services
+If you want to install a specific release of Sentry, use the tags/releases on this repo.
+
+We continously push the Docker image for each commit made into [Sentry](https://github.com/getsentry/sentry), and other services such as [Snuba](https://github.com/getsentry/snuba) or [Symbolicator](https://github.com/getsentry/symbolicator) to [our Docker Hub](https://hub.docker.com/u/getsentry) and tag the latest version on master as `:nightly`. This is also usually what we have on sentry.io and what the install script uses. You can use a custom Sentry image, such as a modified version that you have built on your own, or simply a specific commit hash by setting the `SENTRY_IMAGE` environment variable to that image name before running `./install.sh`:
+
+```shell
+SENTRY_IMAGE=getsentry/sentry:83b1380 ./install.sh
 ```
 
-## Running sentry cleanup
+Note that this may not work for all commit SHAs as this repository evolves with Sentry and its satellite projects. It is highly recommended to check out a version of this repository that is close to the timestamp of the Sentry commit you are installing.
 
-To free up DB space etc, run `sentry cleanup --days 90 --concurrency 25`. Steps to do so:
-* Build docker containers locally by running `docker-compose build`
-* make sure the correct AWS envs vars are set (e.g., run `./htprod` to set aws keys)
-* run `docker run -it --entrypoint bash  sentry-onpremise_cron`
-* copy the env vars from ECS tasks and convert them into `export foo=bar` strings
-* run `sentry cleanup --days 90` and make sure you have access to reources in the vpc (e.g., run `sshuttle -r vpn-prod 172.23.0.0/16 -v`)
-* concurrency needs to be set or cleanup will take a very long time
+### Using Linux
 
-## Resources
+If you are using Linux and you need to use `sudo` when running `./install.sh`, make sure to place the environment variable *after* `sudo`:
 
- * [Documentation](https://docs.sentry.io/server/installation/docker/)
- * [Bug Tracker](https://github.com/getsentry/onpremise)
- * [Forums](https://forum.sentry.io/c/on-premise)
- * [IRC](irc://chat.freenode.net/sentry) (chat.freenode.net, #sentry)
- * [Docker Image](https://hub.docker.com/_/sentry/)
+```shell
+sudo SENTRY_IMAGE=us.gcr.io/sentryio/sentry:83b1380 ./install.sh
+```
+
+Where you replace `83b1380` with the sha you want to use.
+
+[build-status-image]: https://github.com/getsentry/onpremise/workflows/test/badge.svg
+[build-status-url]: https://git.io/JUYkh
